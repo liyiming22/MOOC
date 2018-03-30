@@ -32,24 +32,24 @@ void Guss(int pu[6][8],int pr[6][8])
 {
 	int puzzle[6][8],press[6][8];
 	for ( int N = 0; N <= 63; N++ ) {
-//		»Ö¸´Ô­ÏÈÁÁµÆÇé¿ö 
+//		æ¢å¤åŽŸå…ˆäº®ç¯æƒ…å†µ 
 		for ( int i = 0; i < 6; i++ ) {
 			for ( int j = 0; j < 8; j++ ) {
 				puzzle[i][j] = pu[i][j];
 				press[i][j] = pr[i][j];
 			}
 		}
-//		µÚÒ»ÐÐ°´¼ü×ª»»Îª¶þ½øÖÆ 
+//		ç¬¬ä¸€è¡ŒæŒ‰é”®è½¬æ¢ä¸ºäºŒè¿›åˆ¶ 
 		transform(N,press);
 		for ( int i = 1; i <= 4; i++ ) {
 			for ( int j = 1; j <= 6; j++ ) {
-//				¸Ä±äµÚÒ»ÐÐµ½µÚËÄÐÐµ±Ç°ÐÐµÄÁÁµÆÇé¿ö
+//				æ”¹å˜ç¬¬ä¸€è¡Œåˆ°ç¬¬å››è¡Œå½“å‰è¡Œçš„äº®ç¯æƒ…å†µ
 				puzzle[i][j] = (puzzle[i][j] + press[i][j] + press[i][j - 1] + press[i][j + 1] + press[i - 1][j]) % 2;
-//				¸ù¾Ýµ±Ç°ÐÐ×´Ì¬È·¶¨ÏÂÒ»ÐÐµÄ°´¼ü 
+//				æ ¹æ®å½“å‰è¡ŒçŠ¶æ€ç¡®å®šä¸‹ä¸€è¡Œçš„æŒ‰é”® 
 				press[i + 1][j] =  puzzle[i][j] % 2;
 			}
 		}
-//		ÅÐ¶ÏµÚÎåÐÐÊÇ·ñÈ«²¿Ï¨Ãð
+//		åˆ¤æ–­ç¬¬äº”è¡Œæ˜¯å¦å…¨éƒ¨ç†„ç­
 		bool flag = true;
 		for ( int i = 1; i <= 6; i++ ) {
 			puzzle[5][i] = (puzzle[5][i] + press[5][i] + press[5][i - 1] + press[5][i + 1] + press[4][i]) % 2;
@@ -58,7 +58,10 @@ void Guss(int pu[6][8],int pr[6][8])
 				break;
 			}
 		}
-		if (flag)	showPuzzle(press);
+		if (flag) {
+		    showPuzzle(press);
+		    return;
+		}
 	}
 }
 
