@@ -14,7 +14,8 @@ bool judge(int mid)
 	int sum = 0;
 	for ( int i = 0; i < N; i++ ) {
 		if ( sum + per[i] <= mid )	sum += per[i];
-		else if ( per[i] <= mid ) {
+//		else if ( per[i] <= mid ) {
+		else {
 			sum = per[i];
 			count++;
 		}	
