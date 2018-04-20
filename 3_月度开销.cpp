@@ -18,7 +18,7 @@ bool judge(int mid)
 			sum = per[i];
 			count++;
 		}	
-		else return false;
+// 		else return false;
 	}
 	res = count <= M? true : false;
 	return res;
