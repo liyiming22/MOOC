@@ -3,20 +3,19 @@ using namespace std;
 
 int N;
 int * id;
+int * size;
 
 int find(int a)
 {
-	while( a != id[a] )	a = id[a];
-	return a;
+	if( a == id[a] )	return a;
+	else	return id[a] = find(id[a]);
 }
 
 void check(int a, int b)
 {
-	bool res = false;
 	int a_root = find(a);
 	int b_root = find(b);
-	if ( a_root == b_root )	res = true;
-	cout << (res? "yes" : "no") << endl;
+	cout << (a_root == b_root? "yes" : "no") << endl;
 }
 
 void connect(int a, int b)
@@ -24,7 +23,14 @@ void connect(int a, int b)
 	int a_root = find(a);
 	int b_root = find(b);
 	if ( a_root == b_root )	return;
-	id[b_root] = a_root;
+	else if ( size[a_root] >= size[b_root] ) {
+		id[b_root] = a_root;
+		size[a_root] += size[b_root];
+	}
+	else {
+		id[a_root] = b_root;
+		size[b_root] += size[a_root];
+	}
 }
 
 void showResult()
@@ -45,10 +51,12 @@ void showResult()
 
 int main()
 {
-	freopen("F://input.txt","r",stdin);
+//	freopen("F://input.txt","r",stdin);
 	cin >> N;
 	id = new int[N + 1];
+	size = new int[N + 1]; 
 	for ( int i = 1; i <= N; i++ )	id[i] = i;
+	for ( int i = 1; i <= N; i++ )	size[i] = 1;
 //	????
 	string inp;
 	getline(cin,inp);
@@ -61,6 +69,8 @@ int main()
 		else	connect(a,b);
 	}	
 	showResult();
+//	for ( int i = 1; i <= 5; i++ ) cout << id[i] << " ";
 	delete[] id;
+	delete[] size;
 	return 0;
 }
