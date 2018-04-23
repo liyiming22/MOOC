@@ -11,15 +11,19 @@ int find(int a)
 	else	return id[a] = find(id[a]);
 }
 
-void check(int a, int b)
+void check()
 {
+	int a,b;
+	cin >> a >> b;
 	int a_root = find(a);
 	int b_root = find(b);
 	cout << (a_root == b_root? "yes" : "no") << endl;
 }
 
-void connect(int a, int b)
+void connect()
 {
+	int a,b;
+	cin >> a >> b;
 	int a_root = find(a);
 	int b_root = find(b);
 	if ( a_root == b_root )	return;
@@ -51,25 +55,20 @@ void showResult()
 
 int main()
 {
-//	freopen("F://input.txt","r",stdin);
+	freopen("F://input.txt","r",stdin);
 	cin >> N;
 	id = new int[N + 1];
 	size = new int[N + 1]; 
 	for ( int i = 1; i <= N; i++ )	id[i] = i;
 	for ( int i = 1; i <= N; i++ )	size[i] = 1;
-//	????
-	string inp;
-	getline(cin,inp);
 	while ( true ) {
-		getline(cin,inp);
-		if ( 'S' == inp[0] )	break;
-		int a = inp[2] - '0';
-		int b = inp[4] - '0';
-		if ( 'C' == inp[0] )	check(a,b);
-		else	connect(a,b);
+		char c;
+		cin >> c; 
+		if ( 'S' == c )	break;
+		if ( 'C' == c )	check();
+		else	connect();
 	}	
 	showResult();
-//	for ( int i = 1; i <= 5; i++ ) cout << id[i] << " ";
 	delete[] id;
 	delete[] size;
 	return 0;
