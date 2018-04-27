@@ -17,8 +17,8 @@ int setPivot(int * & A, int low, int high)
 //		find two positions,swap		
 		if ( i < j )	swap(A[i++],A[j--]);
 	}
-	if ( A[i] > pivot )	swap(A[low],A[--i]);
-	else	swap(A[low],A[i]);
+	if ( A[i] > pivot )	i--;
+	swap(A[low],A[i]);
 	return i;
 }
 
