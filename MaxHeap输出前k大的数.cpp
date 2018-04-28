@@ -39,5 +39,5 @@ int main()
 	for ( long long i = 0; i < N; i++ )	insertItem(maxHeap);
 	cin >> K;
 	for ( long long i = 0; i < K; i++ )	cout << deleteItem(maxHeap) << endl;
-//	delete[] maxHeap;
+	delete[] maxHeap;
 }
