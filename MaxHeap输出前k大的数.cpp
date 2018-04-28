@@ -20,7 +20,7 @@ long long deleteItem(long long * maxHeap)
 	long long item = maxHeap[size--];
 	long long parent = 1;
 	long long child;
-	for ( ; size >= parent * 2; parent = child ) {
+	for ( parent; size >= parent * 2; parent = child ) {
 		child = parent * 2;
 		if ( child < size && maxHeap[child] < maxHeap[child + 1] )	child++;
 		if ( item > maxHeap[child] )	break;
@@ -34,7 +34,7 @@ int main()
 {
 	freopen("F://input.txt","r",stdin);
 	cin >> N;
-	maxHeap = new long long[N];
+	maxHeap = new long long[N + 1];
 	maxHeap[0] = 1e9;
 	for ( long long i = 0; i < N; i++ )	insertItem(maxHeap);
 	cin >> K;
