@@ -9,7 +9,7 @@ long long arrangeRight(long long low, long long high, long long k)
 	long long i = low;
 	long long j = high;
 	long long pivot = A[low];
-	if ( i < j ) {
+	while ( i < j ) {
 		while ( i < j && A[i] <= pivot )	i++;
 		while ( i < j && A[j] > pivot )	j--;
 		if ( i < j )	swap(A[i++],A[j--]);
@@ -24,11 +24,11 @@ void arrange(long long low, long long high, long long k)
 	long long pivot = arrangeRight(low,high,k);
 	long long a = high - pivot + 1;
 	if ( a == k )	return;
-	else if ( a < k )	arrange(0,pivot - 1,k - a);
+	else if ( a < k )	arrange(low,pivot - 1,k - a);
 	else	arrange(pivot + 1,high,k);
 }
 
-bool Cmp(int a, int b)
+bool Cmp(long long a, long long b)
 {
 	return a > b;
 }
