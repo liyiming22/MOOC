@@ -7,6 +7,7 @@ int * maxLen;
 
 int solve()
 {
+//	PAY ATTENTION: total_max starts from 1 not 0
 	int total_max = 1;
 	for ( int i = 1; i < N; i++ ) {
 		int temp = 0;
