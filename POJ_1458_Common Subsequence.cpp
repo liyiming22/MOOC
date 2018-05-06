@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory.h>
 using namespace std;
 
 int maxLen[1000][1000];
@@ -10,8 +11,7 @@ int main()
 	while ( cin >> a >> b ) {
 		int lenA = a.length();
 		int lenB = b.length();
-		for ( int i = 0; i <= lenA; i++ )	maxLen[i][0] = 0;
-		for ( int i = 0; i <= lenB; i++ )	maxLen[0][i] = 0;
+		memset(maxLen,0,sizeof(maxLen));
 		for ( int i = 1; i <= lenA; i++ ) {
 			for ( int j = 1; j <= lenB; j++ ) {
 				if ( a[i - 1] == b[j - 1] )	maxLen[i][j] = maxLen[i - 1][j - 1] + 1;
