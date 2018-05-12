@@ -1,14 +1,12 @@
 #include <iostream>
 #include <algorithm>
-#include <memory.h>
+#include <cstring>
 using namespace std;
 
 int t;
 int N,X,Y,MAX;
-//int * lmTime;
-//int * rmTime;
-int lmTime[5];
-int rmTime[5];
+int lmTime[1010];
+int rmTime[1010];
 const int INFINITY = 50000;
 
 struct Node{
@@ -18,8 +16,8 @@ struct Node{
 };
 
 bool Cmp(struct Node node1, struct Node node2);
-int dpLeft(int x, int y, int num, const struct Node * node);
-int dpRight(int x, int y, int num, const struct Node * node);
+int dpLeft(int x, int num, const struct Node * node);
+int dpRight(int x, int num, const struct Node * node);
 
 int main()
 {
@@ -28,25 +26,19 @@ int main()
 	while ( t-- ) {
 		cin >> N >> X >> Y >> MAX;
 		struct Node * node = new struct Node[N + 1];
-//		lmTime = new int[N + 1];
-//		rmTime = new int[N + 1];
 		memset(lmTime,-1,sizeof(lmTime));
 		memset(rmTime,-1,sizeof(rmTime));
-		cout << rmTime[2] << " " << lmTime[3] << endl;
 		node[0].x1 = node[0].x2 = X;
 		node[0].h = Y;
 		for ( int i = 1; i <= N; ++i ) {
 			cin >> node[i].x1 >> node[i].x2 >> node[i].h;
 		}
 		sort(node,node + N + 1,Cmp);
-		int a = dpLeft(X,Y,0,node);
-		int b = dpRight(X,Y,0,node);
+		int a = dpLeft(X,0,node);
+		int b = dpRight(X,0,node);
 		int res = min(a,b);
 		cout << res << endl;
-		cout << lmTime[0] << " " << rmTime[0] << endl;
 		delete[] node;
-//		delete[] lmTime;
-//		delete[] rmTime;
 	}
 	return 0;
 }
@@ -56,47 +48,64 @@ bool Cmp(struct Node node1, struct Node node2)
 	return node1.h > node2.h;
 }
 
-int dpLeft(int x, int y, int num, const struct Node * node)
+int dpLeft(int x, int num, const struct Node * node)
 {
-//	if ( -1 != lmTime[num] )	return lmTime[num];
-//	find the closet left node;
+	if ( -1 != lmTime[num] )	return lmTime[num];
+	int thisLeft = node[num].x1;
+	int thisRight = node[num].x2;
+	int nextLeft,nextRight;
 	int pos = num;
-	for ( int i = num + 1; i <= N + 1; ++i ) {
-		if ( node[i].x1 < node[num].x1 && node[num].h - node[i].h <= MAX )
+//	find the closet left node;
+	for ( int i = num + 1; i <= N; ++i ) {
+		nextLeft = node[i].x1;
+		nextRight = node[i].x2;
+		if ( nextLeft < thisLeft && nextRight >= thisLeft && node[num].h - node[i].h <= MAX ) {
 			pos = i;
+			break;
+		}
 	}
 //	not found
-	if ( num == pos ) {
-		if ( node[num].h > MAX )	lmTime[num] = INFINITY;
-		else	lmTime[num] = x - node[num].x1 + node[num].h;
+	if ( pos == num ) {
+		if ( node[pos].h > MAX )	return lmTime[pos] = INFINITY;
+		else	return lmTime[pos] = x - thisLeft + node[pos].h;
 	}
 //	found
 	else {
-		lmTime[num] = min(x - node[num].x1 + dpLeft(node[num].x1,node[pos].h,pos,node),node[num].x2 - x + dpRight(node[num].x2,node[pos].h,pos,node));
+		int goLeft = x - thisLeft + dpLeft(thisLeft,pos,node);
+		int goRight = x - thisLeft + dpRight(thisLeft,pos,node);
+		lmTime[num] = min(goLeft,goRight);
 	}
-	lmTime[num] += (node[num].h - node[pos].h); 
+	lmTime[num] += node[num].h - node[pos].h;
 	return lmTime[num];
 }
 
-int dpRight(int x, int y, int num, const struct Node * node)
+int dpRight(int x, int num, const struct Node * node)
 {
-//	if ( -1 != rmTime[num] )	return rmTime[num];
-//	find the closet right node;
+	if ( -1 != rmTime[num] )	return rmTime[num];
+	int thisLeft = node[num].x1;
+	int thisRight = node[num].x2;
+	int nextLeft,nextRight;
 	int pos = num;
-	for ( int i = num + 1; i <= N + 1; ++i ) {
-		if ( node[i].x2 > node[num].x2 && node[num].h - node[i].h <= MAX )
+//	find the closet left node;
+	for ( int i = num + 1; i <= N; ++i ) {
+		nextLeft = node[i].x1;
+		nextRight = node[i].x2;
+		if ( nextLeft <= thisRight && nextRight > thisRight && node[num].h - node[i].h <= MAX ) {
 			pos = i;
+			break;
+		}
 	}
 //	not found
-	if ( num == pos ) {
-		if ( node[num].h > MAX )	rmTime[num] = INFINITY;
-		else	rmTime[num] = node[num].x2 - x + node[num].h;
+	if ( pos == num ) {
+		if ( node[pos].h > MAX )	return rmTime[pos] = INFINITY;
+		else	return rmTime[pos] = thisRight - x + node[pos].h;
 	}
 //	found
 	else {
-		rmTime[num] = min(x - node[num].x1 + dpLeft(node[num].x1,node[pos].h,pos,node),node[num].x2 - x + dpRight(node[num].x2,node[pos].h,pos,node));
+		int goLeft = thisRight - x + dpLeft(thisRight,pos,node);
+		int goRight = thisRight - x + dpRight(thisRight,pos,node);
+		rmTime[num] = min(goLeft,goRight);
 	}
-	rmTime[num] += (node[num].h - node[pos].h); 
+	rmTime[num] += node[num].h - node[pos].h;
 	return rmTime[num];
 }
-
