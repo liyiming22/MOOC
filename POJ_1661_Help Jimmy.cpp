@@ -1,23 +1,49 @@
 #include <iostream>
-#include <algorithm>
 #include <cstring>
+#include <algorithm>
 using namespace std;
 
-int t;
-int N,X,Y,MAX;
-int lmTime[1010];
-int rmTime[1010];
-const int INFINITY = 50000;
-
+int t,N,X,Y,MAX;
 struct Node{
-	int x1;
-	int x2;
+	int Lx;
+	int Rx;
 	int h;
 };
+int LeftTime[1010];
+int RightTime[1010];
+const int INFINITY = 30000;
 
-bool Cmp(struct Node node1, struct Node node2);
-int dpLeft(int x, int num, const struct Node * node);
-int dpRight(int x, int num, const struct Node * node);
+bool Cmp(struct Node node1, struct Node node2)
+{
+	return node1.h > node2.h;
+}
+
+int dp(int pos, bool goLeft, const struct Node * node)
+{
+	int thisH = node[pos].h;
+	int thisX = goLeft? node[pos].Lx : node[pos].Rx;
+// 	find the next closet board
+	int next = pos;
+	for ( int i = pos + 1; i <= N; ++i ) {
+		if ( node[i].Lx <= thisX && node[i].Rx >= thisX && thisH - node[i].h <= MAX ) {
+			next = i;
+			break;
+		}
+	}
+//	no found
+	if ( next == pos ) {
+		if ( thisH > MAX )	return INFINITY;
+		else	return thisH;
+	}
+//	found
+	int tempLeft = thisH - node[next].h + thisX - node[next].Lx;
+	int tempRight = thisH - node[next].h + node[next].Rx - thisX;
+	if ( -1 == LeftTime[next] )	LeftTime[next] = dp(next,true,node);
+	if ( -1 == RightTime[next] ) RightTime[next] = dp(next,false,node);
+	tempLeft += LeftTime[next];
+	tempRight += RightTime[next];
+	return min(tempLeft,tempRight);
+}
 
 int main()
 {
@@ -26,86 +52,16 @@ int main()
 	while ( t-- ) {
 		cin >> N >> X >> Y >> MAX;
 		struct Node * node = new struct Node[N + 1];
-		memset(lmTime,-1,sizeof(lmTime));
-		memset(rmTime,-1,sizeof(rmTime));
-		node[0].x1 = node[0].x2 = X;
+		node[0].Lx = node[0].Rx = X;
 		node[0].h = Y;
+		memset(LeftTime,-1,sizeof(LeftTime));
+		memset(RightTime,-1,sizeof(RightTime));
 		for ( int i = 1; i <= N; ++i ) {
-			cin >> node[i].x1 >> node[i].x2 >> node[i].h;
+			cin >> node[i].Lx >> node[i].Rx >> node[i].h;
 		}
 		sort(node,node + N + 1,Cmp);
-		int a = dpLeft(X,0,node);
-		int b = dpRight(X,0,node);
-		int res = min(a,b);
-		cout << res << endl;
+		cout << dp(0,true,node) << endl;
 		delete[] node;
 	}
 	return 0;
-}
-
-bool Cmp(struct Node node1, struct Node node2)
-{
-	return node1.h > node2.h;
-}
-
-int dpLeft(int x, int num, const struct Node * node)
-{
-	if ( -1 != lmTime[num] )	return lmTime[num];
-	int thisLeft = node[num].x1;
-	int thisRight = node[num].x2;
-	int nextLeft,nextRight;
-	int pos = num;
-//	find the closet left node;
-	for ( int i = num + 1; i <= N; ++i ) {
-		nextLeft = node[i].x1;
-		nextRight = node[i].x2;
-		if ( nextLeft < thisLeft && nextRight >= thisLeft && node[num].h - node[i].h <= MAX ) {
-			pos = i;
-			break;
-		}
-	}
-//	not found
-	if ( pos == num ) {
-		if ( node[pos].h > MAX )	return lmTime[pos] = INFINITY;
-		else	return lmTime[pos] = x - thisLeft + node[pos].h;
-	}
-//	found
-	else {
-		int goLeft = x - thisLeft + dpLeft(thisLeft,pos,node);
-		int goRight = x - thisLeft + dpRight(thisLeft,pos,node);
-		lmTime[num] = min(goLeft,goRight);
-	}
-	lmTime[num] += node[num].h - node[pos].h;
-	return lmTime[num];
-}
-
-int dpRight(int x, int num, const struct Node * node)
-{
-	if ( -1 != rmTime[num] )	return rmTime[num];
-	int thisLeft = node[num].x1;
-	int thisRight = node[num].x2;
-	int nextLeft,nextRight;
-	int pos = num;
-//	find the closet left node;
-	for ( int i = num + 1; i <= N; ++i ) {
-		nextLeft = node[i].x1;
-		nextRight = node[i].x2;
-		if ( nextLeft <= thisRight && nextRight > thisRight && node[num].h - node[i].h <= MAX ) {
-			pos = i;
-			break;
-		}
-	}
-//	not found
-	if ( pos == num ) {
-		if ( node[pos].h > MAX )	return rmTime[pos] = INFINITY;
-		else	return rmTime[pos] = thisRight - x + node[pos].h;
-	}
-//	found
-	else {
-		int goLeft = thisRight - x + dpLeft(thisRight,pos,node);
-		int goRight = thisRight - x + dpRight(thisRight,pos,node);
-		rmTime[num] = min(goLeft,goRight);
-	}
-	rmTime[num] += node[num].h - node[pos].h;
-	return rmTime[num];
 }
