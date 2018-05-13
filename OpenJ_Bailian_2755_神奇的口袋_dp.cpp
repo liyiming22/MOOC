@@ -1,14 +1,14 @@
 #include <iostream>
 using namespace std;
 
-const int MAX_SIZE = 40;
+const int MAX_SIZE = 400;
 int N;
 int * bags;
 int ** dp;
 
 int main()
 {
-//	freopen("F://input.txt","r",stdin);
+	freopen("F://input.txt","r",stdin);
 	cin >> N;
 	bags = new int[N + 1];
 	dp = new int * [MAX_SIZE + 1];
@@ -23,6 +23,7 @@ int main()
 		for ( int j = 1; j <= N; ++j ) {
 			dp[i][j] = dp[i][j - 1];
 			if ( bags[j] <= i )	dp[i][j] += dp[i - bags[j]][j - 1];
+			dp[i][j] %= 10000; 
 		}
 	}
 	cout << dp[MAX_SIZE][N] << endl;
