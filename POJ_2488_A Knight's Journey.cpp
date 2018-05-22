@@ -62,4 +62,5 @@ int main()
 		if ( !flag )	cout << "impossible" << endl;
 		cout << endl;
 	}
+	return 0;
 }
