@@ -1,69 +1,56 @@
+// 15:39
 #include <iostream>
 #include <stack>
 using namespace std;
 
 int N;
-int * preOrder;
-int * inOrder;
-int * postOrder;
-int ini_root;
+int preOrder[35];
+int inOrder[35];
+int postOrder[35]; 
 
 void initOrder()
 {
 	stack <int> s;
-	cin >> N;
-	preOrder = new int[N];
-	inOrder = new int[N];
-	int pre_cnt = 0;
-	int in_cnt = 0;
-	for ( int i = 0; i < 2 * N; ++i ) {
+	int preCount = 1;
+	int inCount = 1;
+	for ( int i = 1; i <= 2 * N; ++i ) {
 		string temp;
-		cin >> temp;		
+		cin >> temp;
 		if ( 'u' == temp[1] ) {
-			int node;
-			cin >> node;
-			preOrder[pre_cnt++] = node;
-			s.push(node);
+			cin >> preOrder[preCount];
+			s.push(preOrder[preCount++]);
 		}
-		else if ( 'o' == temp[1] ) {
-			inOrder[in_cnt++] = s.top();
+		else {
+			inOrder[inCount++] = s.top();
 			s.pop();
 		}
 	}
 }
 
-int findRoot(int start, int end)
+void solve(int preL, int inL, int postL, int num)
 {
-	if ( start == end )	return start;
-	for ( int i = 0; i < N; ++i ) {
-		for ( int j = start; j <= end; ++j ) {
-			if ( preOrder[i] == inOrder[j] )	return j;
-		}
+	if ( 0 == num )	return;
+	else if ( 1 == num ) {
+		postOrder[postL] = preOrder[preL];
+		return;
 	}
-}
-
-void postTravel(int start, int end, int root)
-{
-	if ( start == end )	root = end;
-	else {
-		int sub_root = findRoot(start,root - 1);
-		if ( sub_root >= 0 ) postTravel(start,root - 1,sub_root);
-		sub_root = findRoot(root + 1,end);
-		if ( sub_root < N )	postTravel(root + 1,end,sub_root);
+	int root = preOrder[preL];
+	postOrder[postL + num - 1] = root;
+	int L;
+	for ( L = 0; L <= num; ++L ) {
+		if ( root == inOrder[inL + L] )	break;
 	}
-	cout << inOrder[root];
-	if ( root != ini_root )	cout << " ";
+	solve(preL + 1,inL,postL,L);
+	solve(preL + L + 1,inL + L + 1,postL + L,num - L - 1);
 }
 
 int main()
 {
 	freopen("F://input.txt","r",stdin);
+	cin >> N;
 	initOrder();
-	ini_root = findRoot(0,N - 1);
-	postTravel(0,N - 1,ini_root);
-	delete[] preOrder;
-	delete[] inOrder;
-	delete[] postOrder;
+	solve(1,1,1,N);
+	cout << postOrder[1];
+	for ( int i = 2; i <= N; ++i )	cout << " " << postOrder[i];
 	return 0;
 }
-
