@@ -1,137 +1,70 @@
 #include <iostream>
-#include <queue>
-#include <algorithm>
 using namespace std;
 
+int N1, N2;
+int root1 = -1;
+int root2 = -1;
+struct Node * tree1;
+struct Node * tree2;
+
 struct Node{
-	int dad;
 	int lch;
 	int rch;
-	char id;
-};
+	char data;
+}; 
 
-int N1,N2;
-int root1,root2;
-
-//	pay attention to the "&" sign 
-int initTree( struct Node * & tree, int N )
+int createTree(struct Node * & tree, int N)
 {
 	tree = new struct Node[N];
-	for ( int i = 0; i < N; i++ )	tree[i].dad = -1;
-	for ( int i = 0; i < N; i++ )	{
+	bool * check = new bool[N];
+	int root = -1;
+	for ( int i = 0; i < N; i++ )	check[i] = false;
+	for ( int i = 0; i < N; i++ ) {
 		char temp1, temp2;
-		cin >> tree[i].id >> temp1 >> temp2;
-		tree[i].lch = '-' == temp1? -1 : (int)(temp1 % '0');
-		tree[i].rch = '-' == temp2? -1 : (int)(temp2 % '0');
-		if ( tree[i].lch >= 0 )	tree[tree[i].lch].dad = i;
-		if ( tree[i].rch >= 0 )	tree[tree[i].rch].dad = i;
+		cin >> tree[i].data >> temp1 >> temp2;
+		tree[i].lch = '-' == temp1? -1 : (temp1 - '0');
+		tree[i].rch = '-' == temp2? -1 : (temp2 - '0');
+		check[tree[i].lch] = true;
+		check[tree[i].rch] = true;
 	}
 //	find the root node
-	int root;
-	for ( int i = 0; i < N; i++ )	{
-		if ( -1 == tree[i].dad )	{
+	for ( int i = 0; i < N; i++ ) {
+		if ( !check[i] ) {
 			root = i;
 			break;
 		}
 	}
+	delete[] check;
 	return root;
 }
 
-//void range(char * & A)
-//{
-//	int len = 0;
-//	for ( int i = 0; '\0' != A[i]; i++ )	len++;
-//	for ( int i = 0; i < len; i++ ) {
-//		for ( int j = i + 1; j < len; j++ ) {
-//			if ( A[i] > A[j] ) {
-//				char temp = A[i];
-//				A[i] = A[j];
-//				A[j] = A[i];
-//			}
-//		}
-//	} 
-//}
-
-void fun(char * A, int & length, const struct Node * tree, queue <int> q)
+bool isSimilar(int node1, int node2)
 {
-	int i;
-	int len = length;
-	for ( i = 0; i < len; i++ ) {
-		int fro = q.front();
-		if ( tree[fro].lch != -1 ) {
-			q.push(tree[fro].lch);
-			length++;
-		}
-		if ( tree[fro].rch != -1 ) {
-			q.push(tree[fro].rch);
-			length++;
-		}
-		A[i] = tree[fro].id;
-		q.pop();
-		length--;
-	}
-	A[i] = '\0';
-	sort(A,A + i);
-//	range(A);
-}
-
-void showArray(const char * A)
-{
-	for ( int i = 0; '\0' != A[i]; i++ )	cout << A[i] << " ";
-	cout << endl;
-}
-
-void Solve(const struct Node * tree1, const struct Node * tree2)
-{
-//	if ( tree1[root1].id != tree2[root2].id )	{
-//		cout << "No" << endl;
-//		return;
-//	}
-	int len1 = 1;
-	int len2 = 1;
-	queue <int> q1;
-	queue <int> q2;
-	q1.push(root1);
-	q2.push(root2);
-	while ( !q1.empty() && !q2.empty() ) {
-		char * A = new char[10];
-		char * B = new char[10];
-		fun(A,len1,tree1,q1);
-		showArray(A);
-		fun(B,len2,tree2,q2);
-//		showArray(B);
-		for ( int i = 0; '\0' != A[i] && '\0' != B[i]; i++ ) {
-			if ( A[i] != B[i] ) {
-				cout << "No" << endl;
-				return;
-			}
-		}
-		delete []A;
-		delete []B;
-	}
-//	cout << "Yes" << sendl;
+//	both empty
+	if ( -1 == node1 && -1 == node2 )	return true;
+//	one of them is empty
+	if ( ( -1 == node1 && -1 != node2 ) || ( -1 != node1 && -1 == node2 ) )	return false;
+//	roots are different
+	if ( tree1[node1].data != tree2[node2].data )	return false;
+//	both have no left subtree
+	if ( -1 == tree1[node1].lch && -1 == tree2[node2].lch )
+		return isSimilar(tree1[node1].rch, tree2[node2].rch);
+//	no need to swap the left and the right
+	if ( (-1 != tree1[node1].lch && -1 != tree2[node2].lch) && ( tree1[tree1[node1].lch].data == tree2[tree2[node2].lch].data ) )
+		return isSimilar(tree1[node1].lch, tree2[node2].lch) && isSimilar(tree1[node1].rch, tree2[node2].rch);
+//	need to swap the left and the right	
+	else
+		return isSimilar(tree1[node1].rch, tree2[node2].lch) && isSimilar(tree1[node1].lch, tree2[node2].rch);
 }
 
 int main()
 {
 	freopen("F://input.txt","r",stdin);
-	cin >> N1;
-	struct Node * tree1;
-	root1 = initTree(tree1,N1);
-	cin >> N2;
-	if ( N1 != N2 )	{
-		cout << "No" << endl;
-		return 0;
-	}
-	struct Node * tree2;
-	root2 = initTree(tree2,N2);
-//	cout << root1 << " " << root2 << endl;
-//	for ( int i = 0; i < N2; i++ )	{
-//		cout << tree2[i].id << " " << tree2[i].lch << " " << tree2[i].rch << endl;		
-//	}
-	Solve(tree1,tree2);
-	delete tree1;
-	delete tree2;
+	cin >> N1;	root1 = createTree(tree1,N1);
+	cin >> N2;	root2 = createTree(tree2,N2);
+	cout << (isSimilar(root1,root2)? "Yes" : "No") << endl;
+//	delete will cause wrong answer 
+	delete[] tree1;
+	delete[] tree2;
 	return 0;
 }
-
